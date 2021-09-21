@@ -15,9 +15,6 @@ library(tidyr)
 
 vascan_names <- readLines(file.path("data","vascan_hybrid_names.txt"))
 
-
-
-
 # parsing -----------------------------------------------------------------
 
 # nothospecies means a hybrid (nothovar, nothogenus)
@@ -36,16 +33,7 @@ is_hybrid_formula <- function(taxon_name,hybrid_delimitor) {
   parts <- taxon_name %>% stri_split_fixed(hybrid_delimitor)
 
 
-# parts <- vascan_names[1] %>% stri_split_fixed(delimitor)
-
-
 ## check if it's a hybrid formula ------------------------------------------
-
-# for(i in seq(parts[[1]])) {
-#   length(
-#     stri_split_boundaries(str = parts[[1]][i],
-#                           type = "word")[[1]]) 
-# }
 
 # if the first part is longer than one word, it's probably a hybrid formula, if
 # it's just one word, it's a hybrid name
@@ -108,20 +96,6 @@ get_parents_pivoted <- function(hybrid_formula,delimitor) {
               starts_with("confidence")
     )
 }
-
-
-# get_parents(hybrid_formulas[33],delimitor) %>% mutate(parent = c("A","B")) %>% 
-#   pivot_wider_spec(spec) %>% 
-#   transmute(hybrid_formula = hybrid_formulas[33],
-#             usageKey_A,
-#             usageKey_B,
-#             scientificName_A,
-#             scientificName_B,
-#             rank_A,
-#             rank_B,
-#             confidence_A,
-#             confidence_B,
-#             )
 
 
 hybrids_and_parents <- map_dfr(hybrid_formulas,get_parents_pivoted,delimitor) 
