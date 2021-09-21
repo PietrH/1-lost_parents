@@ -3,11 +3,11 @@
 
 # load libraries ----------------------------------------------------------
 
-library(data.table)
-library(dplyr)
-library(stringi)
-library(purrr)
-library(tidyr)
+library(data.table) # Extension of `data.frame`
+library(dplyr) # A Grammar of Data Manipulation
+library(stringi) # Character String Processing Facilities
+library(purrr) # Functional Programming Tools
+library(tidyr) # Tidy Messy Data
 
 # load input data ---------------------------------------------------------
 
@@ -99,4 +99,5 @@ get_parents_pivoted <- function(hybrid_formula,delimitor) {
 
 
 hybrids_and_parents <- map_dfr(hybrid_formulas,get_parents_pivoted,delimitor) 
+
 
