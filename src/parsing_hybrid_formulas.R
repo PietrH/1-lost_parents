@@ -14,7 +14,7 @@ library(tidyr) # Tidy Messy Data
 # loading the test sets of hybrid names
 
 vascan_names <- readLines(file.path("data", "vascan_hybrid_names.txt"))
-
+gbif_names <- fread("data/pierre-andres_gbif_hybrid1.tsv", encoding = "UTF-8",select = "V2")$V2
 # parsing -----------------------------------------------------------------
 
 # nothospecies means a hybrid (nothovar, nothogenus)
@@ -29,8 +29,12 @@ delimiters <- c("×")
 delimiter <- "×"
 
 is_hybrid_formula <- function(taxon_name, hybrid_delimiter) {
-  parts <- taxon_name %>% stri_split_fixed(hybrid_delimiter)
+  
+  
+  # parts <- taxon_name %>% stri_split_fixed(hybrid_delimiter)
 
+  
+  parts <- stringr::str_split_fixed(taxon_name,pattern = hybrid_delimiter, n = Inf)
 
   ## check if it's a hybrid formula ------------------------------------------
 
@@ -38,18 +42,23 @@ is_hybrid_formula <- function(taxon_name, hybrid_delimiter) {
   # it's just one word, it's a hybrid name
 
 
-  hybrid_formula <-
-    length(
-      stri_split_boundaries(
-        str = trimws(parts[[1]][1]),
-        type = "word"
-      )[[1]]
-    ) > 1
-  return(hybrid_formula)
+  # hybrid_formula <-
+  #   length(
+  #     stri_split_boundaries(
+  #       str = trimws(parts[[1]][1]),
+  #       type = "word"
+  #     )[[1]]
+  #   ) > 1
+  # return(hybrid_formula)
+  
+  
+  return(dim(parts)[[2]] > 1)
 }
 
 
 # filter out hybrid formulas only -----------------------------------------
+
+gbif_names[purrr::map_lgl(gbif_names,is_hybrid_formula," x ")]
 
 hybrid_formulas <-
   vascan_names[map_lgl(vascan_names, is_hybrid_formula, "×")]
@@ -63,7 +72,18 @@ get_parents <- function(taxon_name, delimiter) {
     stri_split_fixed(delimiter) %>%
     unlist()
   # return a dataframe with gbif taxonomic backbone matches for the parents
+  
+  if(any(stri_count(parents,fixed = " ") < 1)){
+    genus <-
+      stri_split_boundaries(parents[1], type = "word") %>% unlist %>% .[[1]]
+    
+    parents <- c(parents[1],paste(genus,parents[2:length(parents)]))
+  }
+
+# if the taxon names don't have a space, assume they are of the same genus as the first one
+
   map_dfr(parents, rgbif::name_backbone)
+  
 }
 
 
@@ -72,7 +92,7 @@ get_parents <- function(taxon_name, delimiter) {
 
 get_parents_pivoted <- function(hybrid_formula, delimiter) {
   parents <- get_parents(hybrid_formula, delimiter) %>%
-    filter(!is.na(scientificName)) %>%
+    # filter(!is.na(scientificName)) %>%
     mutate(., parent = letters[1:nrow(.)])
 
   spec <- parents %>%
