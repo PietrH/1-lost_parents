@@ -84,23 +84,26 @@ get_parents <- function(taxon_name,delimitor){
 
 map(hybrid_formulas,get_parents,delimitor)
 
-spec <- get_parents(hybrid_formulas[33],delimitor) %>% mutate(parent = c("A","B")) %>% 
-  build_wider_spec(.,names_from = parent, values_from = names(.))
+
 
 
 get_parents_pivoted <- function(hybrid_formula,delimitor) {
   
-  get_parents(hybrid_formula,delimitor) %>% mutate(parent = c("A","B")) %>% 
+  parents <- get_parents(hybrid_formula,delimitor) %>% mutate(.,parent = letters[1:nrow(.)])
+  
+  spec <- parents %>% 
+    build_wider_spec(.,names_from = parent, values_from = names(.))
+  
+  
+  # get_parents(hybrid_formula,delimitor) %>% mutate(parent = c("A","B")) %>%
+  parents %>%
     pivot_wider_spec(spec) %>% 
-    transmute(hybrid_formula = hybrid_formula,
-              usageKey_A,
-              usageKey_B,
-              scientificName_A,
-              scientificName_B,
-              rank_A,
-              rank_B,
-              confidence_A,
-              confidence_B,
+    mutate(hybrid_formula = hybrid_formula) %>% 
+    select(hybrid_formula,
+              starts_with("usageKey"),
+              starts_with("scientificName"),
+              starts_with("rank"),
+              starts_with("confidence")
     )
 }
 
@@ -119,6 +122,5 @@ get_parents_pivoted <- function(hybrid_formula,delimitor) {
 #             )
 
 
-map_dfr(hybrid_formulas[1:3],get_parents,delimitor) %>% 
-  tidyr::pivot_wider(names_from = hybrid_formula) %>% 
-  View()
+hybrids_and_parents <- map_dfr(hybrid_formulas,get_parents_pivoted,delimitor) 
+
