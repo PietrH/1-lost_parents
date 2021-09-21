@@ -19,17 +19,17 @@ vascan_names <- readLines(file.path("data", "vascan_hybrid_names.txt"))
 
 # nothospecies means a hybrid (nothovar, nothogenus)
 
-## split on a delimitor ----------------------------------------------------
+## split on a delimiter ----------------------------------------------------
 
 # TODO something to check which delimiter was likely used for a string from a
-# list of known delimitors
+# list of known delimiters
 
-delimitors <- c("×")
+delimiters <- c("×")
 
-delimitor <- "×"
+delimiter <- "×"
 
-is_hybrid_formula <- function(taxon_name, hybrid_delimitor) {
-  parts <- taxon_name %>% stri_split_fixed(hybrid_delimitor)
+is_hybrid_formula <- function(taxon_name, hybrid_delimiter) {
+  parts <- taxon_name %>% stri_split_fixed(hybrid_delimiter)
 
 
   ## check if it's a hybrid formula ------------------------------------------
@@ -57,10 +57,10 @@ hybrid_formulas <-
 
 # get parents from a formula ----------------------------------------------
 
-get_parents <- function(taxon_name, delimitor) {
+get_parents <- function(taxon_name, delimiter) {
   parents <-
     taxon_name %>%
-    stri_split_fixed(delimitor) %>%
+    stri_split_fixed(delimiter) %>%
     unlist()
   # return a dataframe with gbif taxonomic backbone matches for the parents
   map_dfr(parents, rgbif::name_backbone)
@@ -68,10 +68,10 @@ get_parents <- function(taxon_name, delimitor) {
 
 
 # test function
-# map(hybrid_formulas, get_parents, delimitor)
+# map(hybrid_formulas, get_parents, delimiter)
 
-get_parents_pivoted <- function(hybrid_formula, delimitor) {
-  parents <- get_parents(hybrid_formula, delimitor) %>%
+get_parents_pivoted <- function(hybrid_formula, delimiter) {
+  parents <- get_parents(hybrid_formula, delimiter) %>%
     filter(!is.na(scientificName)) %>%
     mutate(., parent = letters[1:nrow(.)])
 
@@ -79,7 +79,7 @@ get_parents_pivoted <- function(hybrid_formula, delimitor) {
     build_wider_spec(., names_from = parent, values_from = names(.))
 
 
-  # get_parents(hybrid_formula,delimitor) %>% mutate(parent = c("A","B")) %>%
+  # get_parents(hybrid_formula,delimiter) %>% mutate(parent = c("A","B")) %>%
   parents %>%
     pivot_wider_spec(spec) %>%
     mutate(hybrid_formula = hybrid_formula) %>%
@@ -94,7 +94,7 @@ get_parents_pivoted <- function(hybrid_formula, delimitor) {
 
 
 # create dataframe with the hybrid formulas united with their parents
-hybrids_and_parents <- map_dfr(hybrid_formulas, get_parents_pivoted, delimitor)
+hybrids_and_parents <- map_dfr(hybrid_formulas, get_parents_pivoted, delimiter)
 
 
 
