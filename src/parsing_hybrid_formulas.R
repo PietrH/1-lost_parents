@@ -48,7 +48,6 @@ is_hybrid_formula <- function(taxon_name, hybrid_delimitor) {
   return(hybrid_formula)
 }
 
-# for(i in 1:50){get_parents(vascan_names[i],"×")}
 
 # filter out hybrid formulas only -----------------------------------------
 
@@ -94,6 +93,7 @@ get_parents_pivoted <- function(hybrid_formula, delimitor) {
 }
 
 
+# create dataframe with the hybrid formulas united with their parents
 hybrids_and_parents <- map_dfr(hybrid_formulas, get_parents_pivoted, delimitor)
 
 
