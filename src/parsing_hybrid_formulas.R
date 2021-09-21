@@ -89,7 +89,9 @@ map(hybrid_formulas,get_parents,delimitor)
 
 get_parents_pivoted <- function(hybrid_formula,delimitor) {
   
-  parents <- get_parents(hybrid_formula,delimitor) %>% mutate(.,parent = letters[1:nrow(.)])
+  parents <- get_parents(hybrid_formula,delimitor) %>%
+    filter(!is.na(scientificName)) %>% 
+    mutate(.,parent = letters[1:nrow(.)])
   
   spec <- parents %>% 
     build_wider_spec(.,names_from = parent, values_from = names(.))
