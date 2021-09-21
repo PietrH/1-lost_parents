@@ -95,3 +95,17 @@ get_parents_pivoted <- function(hybrid_formula, delimitor) {
 
 
 hybrids_and_parents <- map_dfr(hybrid_formulas, get_parents_pivoted, delimitor)
+
+
+
+# write output ------------------------------------------------------------
+
+fwrite(hybrids_and_parents,
+       file.path("data",
+                 paste0(
+                   format(Sys.time(),
+                          "%F_%H-%M"),
+                   "_vascan_hybrids_parents",
+                   ".csv")
+                 )
+       )
