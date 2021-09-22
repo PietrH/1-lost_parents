@@ -86,3 +86,17 @@ hybrids_matched <-
     rgbif::name_backbone()
     },
     .options = furrr_options(seed = NULL))
+
+
+
+# publish -----------------------------------------------------------------
+
+
+
+hybrids_matched %>% data.table::fwrite(file.path("data",
+                                                 paste0(
+                                                   format(Sys.time(),
+                                                          "%F_%H-%M"),
+                                                   "_gbif_checklist_hybrids",
+                                                   ".csv"
+                                                 )))
