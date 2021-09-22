@@ -43,7 +43,7 @@ tileRaster = paste0('https://tile.gbif.org/',projection,'/omt/{z}/{x}/{y}@1x.png
 # create our polygons layer 
 prefix = 'https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?'
 polygons = 'style=fire.point' # ploygon styles 
-taxonKey_query = sprintf('taxonKey=%i',taxon_key) # taxonKey of Odonata (dragonflies and damselflies)
+taxonKey_query = sprintf('taxonKey=%i',taxon_key) 
 tilePolygons = paste0(prefix,polygons,'&',taxonKey_query)
 # plot the styled map
 leaflet() %>%
