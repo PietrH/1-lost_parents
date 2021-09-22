@@ -15,6 +15,8 @@ library(tidyr) # Tidy Messy Data
 
 vascan_names <- readLines(file.path("data", "vascan_hybrid_names.txt"))
 gbif_names <- fread("data/pierre-andres_gbif_hybrid1.tsv", encoding = "UTF-8",select = "V2")$V2
+quentin_gbif_occ <- readr::read_lines("data/hybridnamesUniq2.txt")
+
 # parsing -----------------------------------------------------------------
 
 # nothospecies means a hybrid (nothovar, nothogenus)
@@ -24,23 +26,41 @@ gbif_names <- fread("data/pierre-andres_gbif_hybrid1.tsv", encoding = "UTF-8",se
 # TODO something to check which delimiter was likely used for a string from a
 # list of known delimiters
 
-delimiters <- c("×")
+delimiters <- c("×"," X "," x ")
 
 delimiter <- "×"
 
-is_hybrid_formula <- function(taxon_name, hybrid_delimiter) {
+is_hybrid_formula <- function(taxon_name, hybrid_delimiter = delimiters) {
+  
+  # check length of input (currently one at a time please)
+  if (length(taxon_name) > 1) {
+    stop(sprintf("taxon_name has length %i, should be only 1", length(taxon_name)))
+  }
+  
+  ## taxon_name cleaner code
+  
+  taxon_name_clean <- 
+    stringr::str_remove_all(taxon_name,"\\?") %>% 
+    trimws()
   
   
   # parts <- taxon_name %>% stri_split_fixed(hybrid_delimiter)
 
   
-  parts <- stringr::str_split_fixed(taxon_name,pattern = hybrid_delimiter, n = Inf)
+  # parts <- stringr::str_split_fixed(taxon_name_clean,pattern = hybrid_delimiter, n = Inf)
+  parts <- stringr::str_split(taxon_name_clean,pattern = hybrid_delimiter, n = Inf)
 
   ## check if it's a hybrid formula ------------------------------------------
 
   # if the first part is longer than one word, it's probably a hybrid formula, if
   # it's just one word, it's a hybrid name
 
+  # parts[[1]] %>% 
+  #   trimws() %>% 
+  #   stringi::stri_split_boundaries(type = "word") %>% 
+  #   unlist() %>% 
+  #   stri_replace_all_fixed(pattern = " ", replacement = "") %>% 
+  #   stri_remove_empty()
 
   # hybrid_formula <-
   #   length(
@@ -52,7 +72,8 @@ is_hybrid_formula <- function(taxon_name, hybrid_delimiter) {
   # return(hybrid_formula)
   
   
-  return(dim(parts)[[2]] > 1)
+  # return(dim(parts)[[2]] > 1)
+  return(stringi::stri_count_words(parts[[1]]) > 1)
 }
 
 
