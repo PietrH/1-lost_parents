@@ -52,7 +52,26 @@ tictoc::toc()
 
 # get parents for non bracket non formula ---------------------------------
 
-hybrids_parsed %>%
+hybrids_parsed_parents <- 
+  hybrids_parsed %>%
   filter(is_hybrid_formula) %>%
   filter(!has_brackets) %>%
-  nrow()
+  pull(input_strings) %>% 
+  future_map_dfr(get_parents_pivoted,' x | X | × | ×',.options = furrr_options(seed = NULL))
+
+
+hybrids_and_parents %>% full_join(hybrids_parsed,by = c( "hybrid_formula" = "input_strings")) %>% View()
+
+full_join(
+  hybrids_parsed,
+  hybrids_and_parents,
+  by = c("input_strings" = "hybrid_formula"),
+  suffix = c(".hybrids", ".parents")
+) %>% 
+  fwrite(file.path("data",
+                   paste0(
+                     format(Sys.time(),
+                            "%F_%H-%M"),
+                     "_hybridnamesUniq2_parents",
+                     ".csv")
+  ))
