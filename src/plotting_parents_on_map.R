@@ -71,10 +71,12 @@ create_taxon_tiles <- function(taxon_key,style=sample(c("classic.point","purpleY
 
 # create leaflet ----------------------------------------------------------
 projection = '3857' # projection code
-style = 'style=osm-bright' # map style
+style = 'style=osm-bright' # map style, see https://tile.gbif.org/ui/
 tileRaster = paste0('https://tile.gbif.org/',projection,'/omt/{z}/{x}/{y}@1x.png?',style)
 
 leaflet() %>%
   setView(lng = 5.4265362, lat = 43.4200248, zoom = 01) %>%
   addTiles(urlTemplate = tileRaster) %>%
-  create_taxon_tiles()
+  create_taxon_tiles(parent_a) %>% 
+  create_taxon_tiles(parent_b) %>% 
+  create_taxon_tiles(hybrid)
