@@ -58,7 +58,8 @@ is_hybrid_formula <- function(taxon_name, hybrid_delimiter) {
 
 # filter out hybrid formulas only -----------------------------------------
 
-gbif_names[purrr::map_lgl(gbif_names,is_hybrid_formula," x ")]
+hybrid_formulas <- gbif_names[purrr::map_lgl(gbif_names,is_hybrid_formula," x")] %>% 
+  unique
 
 hybrid_formulas <-
   vascan_names[map_lgl(vascan_names, is_hybrid_formula, "×")]
@@ -114,7 +115,12 @@ get_parents_pivoted <- function(hybrid_formula, delimiter) {
 
 
 # create dataframe with the hybrid formulas united with their parents
-hybrids_and_parents <- map_dfr(hybrid_formulas, get_parents_pivoted, delimiter)
+hybrids_and_parents <-
+  map_dfr(hybrid_formulas,
+          get_parents_pivoted,
+          # delimiter
+          " x "
+          )
 
 
 
