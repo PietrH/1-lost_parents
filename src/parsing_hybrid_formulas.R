@@ -28,9 +28,9 @@ quentin_gbif_occ <- readr::read_lines("data/hybridnamesUniq2.txt")
 
 delimiters <- c("×"," X "," x ")
 
-delimiter <- "×"
+delimiter <- ' x | X | × | ×'
 
-is_hybrid_formula <- function(taxon_name, hybrid_delimiter = delimiters) {
+is_hybrid_formula <- function(taxon_name, hybrid_delimiter = ' x | X | × | ×') {
   
   # check length of input (currently one at a time please)
   if (length(taxon_name) > 1) {
@@ -48,7 +48,8 @@ is_hybrid_formula <- function(taxon_name, hybrid_delimiter = delimiters) {
 
   
   # parts <- stringr::str_split_fixed(taxon_name_clean,pattern = hybrid_delimiter, n = Inf)
-  parts <- stringr::str_split(taxon_name_clean,pattern = hybrid_delimiter, n = Inf)
+  parts <- stringr::str_split(taxon_name_clean,pattern = hybrid_delimiter, n = Inf) %>% 
+    unlist
 
   ## check if it's a hybrid formula ------------------------------------------
 
