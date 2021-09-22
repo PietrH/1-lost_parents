@@ -92,7 +92,8 @@ hybrid_formulas <-
 get_parents <- function(taxon_name, delimiter) {
   parents <-
     taxon_name %>%
-    stri_split_fixed(delimiter) %>%
+    # stri_split_fixed(delimiter) %>%
+    stri_split(delimiter) %>%
     unlist()
   # return a dataframe with gbif taxonomic backbone matches for the parents
   
