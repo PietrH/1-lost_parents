@@ -5,17 +5,35 @@
 library(leaflet)
 library(raster)
 # library(mapview)
+library(rangemap)
 
 # set an example ----------------------------------------------------------
 
+hybrids_and_parents <- 
+  full_join(
+  hybrids_parsed,
+  hybrids_parsed_parents,
+  by = c("input_strings" = "hybrid_formula"),
+  suffix = c(".hybrids", ".parents")
+) %>% filter(is_hybrid_formula) %>% 
+  filter(!is.na(usageKey_a)) %>% 
+  filter(!is.na(usageKey_b)) %>% 
+  filter(!is.na(usageKey))
 
 
+# parent_a <- hybrids_and_parents[6,"usageKey_a"] %>% as.character()
+# parent_b <- hybrids_and_parents[6,"usageKey_b"] %>% as.character()
 
-parent_a <- hybrids_and_parents[6,"usageKey_a"] %>% as.character()
-parent_b <- hybrids_and_parents[6,"usageKey_b"] %>% as.character()
+# hybrid <-
+#   hybrids_and_parents[6, "hybrid_formula"] %>%
+#   rgbif::name_backbone() %>%
+#   pull(usageKey) %>%
+#   as.character()
 
-hybrid <-
-  hybrids_and_parents[6, "hybrid_formula"] %>% rgbif::name_backbone() %>% pull(usageKey) %>% as.character()
+parent_a <- pull(slice_sample(hybrids_and_parents, n = 1), usageKey_a) %>% as.character()
+parent_b <- pull(slice_sample(hybrids_and_parents, n = 1), usageKey_b) %>% as.character()
+hybrid <- pull(slice_sample(hybrids_and_parents, n = 1), usageKey) %>% as.character()
+
 
 
 # make a plot -------------------------------------------------------------
@@ -89,3 +107,13 @@ leaflet() %>%
   addTiles(urlTemplate = create_taxon_tiles(parent_a,style = "blue.marker")) %>%
   addTiles(urlTemplate = create_taxon_tiles(parent_b, style = "blue.marker")) %>%
   addTiles(urlTemplate = create_taxon_tiles(hybrid, style = "orange.marker")) # %>% addLegend()
+
+
+
+# using rangemapping ------------------------------------------------------
+
+# trying convex hulls
+
+get_occ <- function(taxon_key) {
+  transmute(rgbif::occ_data(taxonKey = taxon_key)$data, name = scientificName, longitude = decimalLongitude, latitude = decimalLatitude)
+}
