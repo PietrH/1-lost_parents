@@ -92,6 +92,13 @@ hybrid_formulas <-
 # get parents from a formula ----------------------------------------------
 
 get_parents <- function(taxon_name, delimiter = ' x | X | × | ×') {
+  
+  ## taxon_name cleaner code
+  
+  taxon_name <- 
+    stringr::str_remove_all(taxon_name,"\\?") %>% 
+    trimws()
+  
   parents <-
     taxon_name %>%
     # stri_split_fixed(delimiter) %>%
@@ -115,9 +122,9 @@ get_parents <- function(taxon_name, delimiter = ' x | X | × | ×') {
   # parent (the genus)
   
   if (all(
-    stri_detect_regex(parents[2], "^[A-Z]{1}\\."),
-    stringr::str_extract(parents[1], "[A-Z]{1}") == stringr::str_extract(parents[2], "[A-Z]{1}"),
-    length(parents) == 2
+    isTRUE(stri_detect_regex(parents[2], "^[A-Z]{1}\\.")),
+    isTRUE(stringr::str_extract(parents[1], "[A-Z]{1}") == stringr::str_extract(parents[2], "[A-Z]{1}")),
+    isTRUE(length(parents) == 2)
   )) {
     parents[2] <-
       stri_replace_all_fixed(
