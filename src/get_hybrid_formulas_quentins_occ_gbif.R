@@ -13,7 +13,7 @@ library(tidyr)
 
 # set futures plan --------------------------------------------------------
 
-plan("multisession",workers = 6)
+plan("multisession",workers = 8)
 
 # load input --------------------------------------------------------------
 
@@ -43,7 +43,7 @@ hybrids_parsed <-
                },
                .options = furrr_options(seed = NULL)
                  ) %>% 
-  mutate(is_hybrid_formula = purrr::map_lgl(input_strings, is_hybrid_formula, ' x | X | × | ×')) %>% 
+  mutate(is_hybrid_formula = furrr::future_map_lgl(input_strings, is_hybrid_formula, ' x | X | × | ×')) %>% 
   mutate(has_brackets = stringi::stri_detect_regex(input_strings,"\\(|\\)")) %>% 
   select(input_strings,is_hybrid_formula,has_brackets,tidyselect::everything())
 
