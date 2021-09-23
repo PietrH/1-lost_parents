@@ -115,5 +115,39 @@ leaflet() %>%
 # trying convex hulls
 
 get_occ <- function(taxon_key) {
-  transmute(rgbif::occ_data(taxonKey = taxon_key)$data, name = scientificName, longitude = decimalLongitude, latitude = decimalLatitude)
+  transmute(
+    rgbif::occ_data(taxonKey = taxon_key)$data,
+    name = scientificName,
+    longitude = decimalLongitude,
+    latitude = decimalLatitude
+  )
 }
+
+
+get_occ(parent_b)
+get_occ(hybrid)
+
+hull_a <- rangemap_hull(
+  occurrences = get_occ(parent_a),
+  hull_type = "convex",
+  buffer_distance = 100000,
+  # save_shp = T,
+  # name = "hull_a"
+  )
+
+hull_b <- rangemap_hull(
+  occurrences = get_occ(parent_b),
+  hull_type = "convex",
+  buffer_distance = 100000
+)
+
+rangemap_plot(hull_a)
+rangemap_plot(hull_b)
+
+# occ_sp <- get_occ(parent_a) %>% 
+#   sp::SpatialPointsDataFrame(coords = .[,2,3],data = .,proj4string = sp::CRS("+init=epsg:4326"))
+# 
+#   sp::spTransform(.,LAEA_projection(spatial_object = .)) %>% 
+#   hull_polygon(hull_type = "convex")
+
+ranges_emaps(hull_a,hull_b)
