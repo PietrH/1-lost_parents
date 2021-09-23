@@ -48,7 +48,7 @@ is_hybrid_formula <- function(taxon_name, hybrid_delimiter = ' x | X | × | ×')
 
   
   # parts <- stringr::str_split_fixed(taxon_name_clean,pattern = hybrid_delimiter, n = Inf)
-  parts <- stringr::str_split(taxon_name_clean,pattern = hybrid_delimiter, n = Inf) %>% 
+  parts <- stringr::str_split_regex(taxon_name_clean,pattern = hybrid_delimiter, n = Inf) %>% 
     unlist
 
   ## check if it's a hybrid formula ------------------------------------------
@@ -93,7 +93,7 @@ get_parents <- function(taxon_name, delimiter) {
   parents <-
     taxon_name %>%
     # stri_split_fixed(delimiter) %>%
-    stri_split(delimiter) %>%
+    stri_split_regex(delimiter) %>%
     unlist()
   # return a dataframe with gbif taxonomic backbone matches for the parents
   
