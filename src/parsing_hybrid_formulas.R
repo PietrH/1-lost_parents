@@ -48,8 +48,10 @@ is_hybrid_formula <- function(taxon_name, hybrid_delimiter = ' x | X | × | ×')
 
   
   # parts <- stringr::str_split_fixed(taxon_name_clean,pattern = hybrid_delimiter, n = Inf)
-  parts <- stringr::str_split_regex(taxon_name_clean,pattern = hybrid_delimiter, n = Inf) %>% 
-    unlist
+  # parts <- stringr::str_split_regex(taxon_name_clean,pattern = hybrid_delimiter, n = Inf) %>% 
+  #   unlist
+  parts <- stringi::stri_split_regex(taxon_name_clean, pattern = hybrid_delimiter) %>% unlist
+    
 
   ## check if it's a hybrid formula ------------------------------------------
 
@@ -89,7 +91,7 @@ hybrid_formulas <-
 
 # get parents from a formula ----------------------------------------------
 
-get_parents <- function(taxon_name, delimiter) {
+get_parents <- function(taxon_name, delimiter = ' x | X | × | ×') {
   parents <-
     taxon_name %>%
     # stri_split_fixed(delimiter) %>%
@@ -97,15 +99,36 @@ get_parents <- function(taxon_name, delimiter) {
     unlist()
   # return a dataframe with gbif taxonomic backbone matches for the parents
   
-  if(any(stri_count(parents,fixed = " ") < 1)){
+  if (any(stri_count(parents, fixed = " ") < 1)) {
     genus <-
       stri_split_boundaries(parents[1], type = "word") %>% unlist %>% .[[1]]
     
-    parents <- c(parents[1],paste(genus,parents[2:length(parents)]))
+    parents <- c(parents[1], paste(genus, parents[2:length(parents)]))
   }
-
-# if the taxon names don't have a space, assume they are of the same genus as the first one
-
+  
+  # if the taxon names don't have a space, assume they are of the same genus as the first one
+  
+  
+  # if the second parent starts with a single capital letter followed by a
+  # period, and this letter is the same letter as the first word of the first
+  # parent, then replace this letter and period with the first word of the first
+  # parent (the genus)
+  
+  if (all(
+    stri_detect_regex(parents[2], "^[A-Z]{1}\\."),
+    stringr::str_extract(parents[1], "[A-Z]{1}") == stringr::str_extract(parents[2], "[A-Z]{1}"),
+    length(parents) == 2
+  )) {
+    parents[2] <-
+      stri_replace_all_fixed(
+        str = parents[2],
+        pattern = stri_extract(parents[2], regex = "^[A-Z]{1}\\."),
+        replacement = stri_extract_all_boundaries(parents[1], type = "word")[[1]][1]
+      )
+  }
+  
+  
+  
   map_dfr(parents, rgbif::name_backbone)
   
 }
