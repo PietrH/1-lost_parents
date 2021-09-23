@@ -7,12 +7,13 @@
 
 # load libraries ----------------------------------------------------------
 library(furrr)
-
-
+library(dplyr)
+library(stringi)
+library(tidyr)
 
 # set futures plan --------------------------------------------------------
 
-plan("multisession",workers = 10)
+plan("multisession",workers = 6)
 
 # load input --------------------------------------------------------------
 
@@ -60,11 +61,11 @@ hybrids_parsed_parents <-
   future_map_dfr(get_parents_pivoted,' x | X | × | ×',.options = furrr_options(seed = NULL))
 
 
-hybrids_and_parents %>% full_join(hybrids_parsed,by = c( "hybrid_formula" = "input_strings")) %>% View()
+# hybrids_and_parents %>% full_join(hybrids_parsed,by = c( "hybrid_formula" = "input_strings")) %>% View()
 
 full_join(
   hybrids_parsed,
-  hybrids_and_parents,
+  hybrids_parsed_parents,
   by = c("input_strings" = "hybrid_formula"),
   suffix = c(".hybrids", ".parents")
 ) %>% 
