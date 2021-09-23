@@ -69,7 +69,7 @@ full_join(
   by = c("input_strings" = "hybrid_formula"),
   suffix = c(".hybrids", ".parents")
 ) %>% 
-  fwrite(file.path("data",
+  data.table::fwrite(file.path("data",
                    paste0(
                      format(Sys.time(),
                             "%F_%H-%M"),
