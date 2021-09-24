@@ -30,11 +30,15 @@ hybrids_and_parents <-
 #   pull(usageKey) %>%
 #   as.character()
 
-parent_a <- pull(slice_sample(hybrids_and_parents, n = 1), usageKey_a) %>% as.character()
-parent_b <- pull(slice_sample(hybrids_and_parents, n = 1), usageKey_b) %>% as.character()
-hybrid <- pull(slice_sample(hybrids_and_parents, n = 1), usageKey) %>% as.character()
+hybrid_sample <- slice_sample(hybrids_and_parents,n = 1)
 
+# parent_a <- pull(slice_sample(hybrids_and_parents, n = 1), usageKey_a) %>% as.character()
+# parent_b <- pull(slice_sample(hybrids_and_parents, n = 1), usageKey_b) %>% as.character()
+# hybrid <- pull(slice_sample(hybrids_and_parents, n = 1), usageKey) %>% as.character()
 
+parent_a <- pull(hybrid_sample, usageKey_a) %>% as.character()
+parent_b <- pull(hybrid_sample, usageKey_b) %>% as.character()
+hybrid <- pull(hybrid_sample, usageKey) %>% as.character()
 
 # make a plot -------------------------------------------------------------
 
@@ -49,7 +53,7 @@ rgbif::map_fetch(source="density",taxonKey=parent_a, style = "gbif-violet") %>% 
 
 
 
-taxon_key = parent_a <- hybrids_and_parents[6,"usageKey_a"]
+# taxon_key = parent_a <- hybrids_and_parents[6,"usageKey_a"]
 
 map_taxon <- function(taxon_key) {
   
@@ -104,9 +108,9 @@ tileRaster = paste0('https://tile.gbif.org/',projection,'/omt/{z}/{x}/{y}@1x.png
 leaflet() %>%
   setView(lng = 5.4265362, lat = 43.4200248, zoom = 01) %>%
   addTiles(urlTemplate = tileRaster) %>%
-  addTiles(urlTemplate = create_taxon_tiles(parent_a,style = "blue.marker")) %>%
-  addTiles(urlTemplate = create_taxon_tiles(parent_b, style = "blue.marker")) %>%
-  addTiles(urlTemplate = create_taxon_tiles(hybrid, style = "orange.marker")) # %>% addLegend()
+  addTiles(urlTemplate = create_taxon_tiles(parent_a,style = "blue.marker&bin=hex")) %>%
+  addTiles(urlTemplate = create_taxon_tiles(parent_b, style = "purpleYellow.poly&bin=hex")) %>%
+  addTiles(urlTemplate = create_taxon_tiles(hybrid, style = "red.poly&bin=hex")) # %>% addLegend()
 
 
 
