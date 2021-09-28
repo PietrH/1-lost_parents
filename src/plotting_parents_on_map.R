@@ -137,15 +137,18 @@ get_occ(hybrid)
 
 hull_a <- rangemap_hull(
   occurrences = get_occ(parent_a),
-  hull_type = "convex",
+  hull_type = "concave",
+  split = TRUE,
+  split_distance = 2000000, # if occ is more than X m isolated, assume split range
   buffer_distance = 100000,
-  # save_shp = T,
-  # name = "hull_a"
+  save_shp = T,
+  name = "hull_a_concave"
   )
 
 hull_b <- rangemap_hull(
   occurrences = get_occ(parent_b),
-  hull_type = "convex",
+  hull_type = "concave",
+  split = TRUE,
   buffer_distance = 100000
 )
 
