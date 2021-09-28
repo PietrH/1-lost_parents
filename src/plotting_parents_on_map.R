@@ -2,6 +2,7 @@
 
 
 # load libraries ----------------------------------------------------------
+library(dplyr)
 library(leaflet)
 library(raster)
 # library(mapview)
@@ -30,7 +31,10 @@ hybrids_and_parents <-
 #   pull(usageKey) %>%
 #   as.character()
 
-hybrid_sample <- slice_sample(hybrids_and_parents,n = 1)
+filter(hybrids_and_parents,
+       input_strings == "Veronica hederifolia x triloba") -> hybrid_sample
+
+# hybrid_sample <- slice_sample(hybrids_and_parents,n = 1)
 
 # parent_a <- pull(slice_sample(hybrids_and_parents, n = 1), usageKey_a) %>% as.character()
 # parent_b <- pull(slice_sample(hybrids_and_parents, n = 1), usageKey_b) %>% as.character()
@@ -109,8 +113,8 @@ leaflet() %>%
   setView(lng = 5.4265362, lat = 43.4200248, zoom = 01) %>%
   addTiles(urlTemplate = tileRaster) %>%
   addTiles(urlTemplate = create_taxon_tiles(parent_a,style = "blue.marker&bin=hex")) %>%
-  addTiles(urlTemplate = create_taxon_tiles(parent_b, style = "purpleYellow.poly&bin=hex")) %>%
-  addTiles(urlTemplate = create_taxon_tiles(hybrid, style = "red.poly&bin=hex")) # %>% addLegend()
+  addTiles(urlTemplate = create_taxon_tiles(parent_b, style = "red.poly&bin=hex")) %>%
+  addTiles(urlTemplate = create_taxon_tiles(hybrid, style = "purpleYellow.poly&bin=hex")) # %>% addLegend()
 
 
 
