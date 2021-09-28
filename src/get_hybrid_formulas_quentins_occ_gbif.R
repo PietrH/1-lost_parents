@@ -50,6 +50,14 @@ hybrids_parsed <-
 
 tictoc::toc()
 
+data.table::fwrite(hybrids_parsed,file.path("data",paste0(
+  format(
+    Sys.time(),
+    "%F_%H-%M"
+  ),
+  "_quentin_hybrids_parsed",
+  ".csv"
+)))
 
 # get parents for non bracket non formula ---------------------------------
 
@@ -59,6 +67,16 @@ hybrids_parsed_parents <-
   filter(!has_brackets) %>%
   pull(input_strings) %>% 
   future_map_dfr(get_parents_pivoted,' x | X | × | ×',.options = furrr_options(seed = NULL))
+
+
+data.table::fwrite(hybrids_parsed_parents,file.path("data",paste0(
+  format(
+    Sys.time(),
+    "%F_%H-%M"
+  ),
+  "_quentin_hybrids_parsed_parents",
+  ".csv"
+)))
 
 
 # hybrids_and_parents %>% full_join(hybrids_parsed,by = c( "hybrid_formula" = "input_strings")) %>% View()
